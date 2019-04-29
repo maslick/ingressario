@@ -1,3 +1,4 @@
+```
 gcloud auth revoke --all
 gcloud init
 
@@ -51,3 +52,4 @@ k describe clusterissuer letsencrypt-prod
 k apply -f ingress.yaml
 curl -v k8s.maslick.ru/hi
 curl -v k8s.maslick.ru/hello
+```
