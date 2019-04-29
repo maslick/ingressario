@@ -70,9 +70,13 @@ k apply -f issuer.yaml
 k describe clusterissuer letsencrypt-prod
 ```
 
-12. Create ingress and test the service:
+12. Create ingress:
 ```
 k apply -f ingress.yaml
-curl -v k8s.maslick.ru/hi
-curl -v k8s.maslick.ru/hello
+```
+
+13. Test the service:
+```
+curl -v https://k8s.maslick.ru/hi
+curl -v https://k8s.maslick.ru/hello
 ```
