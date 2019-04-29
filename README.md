@@ -28,7 +28,7 @@ NAMESPACE=kube-system
 IP_ADDRESS=$(kubectl describe service ingressario-nginx-nginx-ingress-controller --namespace=$NAMESPACE | grep 'LoadBalancer Ingress' | rev | cut -d: -f1 | rev | xargs)
 gcloud compute addresses create k8s-static-ip --addresses $IP_ADDRESS --region europe-west3
 
-# get the external IP and add a DNS A record inside your DNS provider that point k8s.maslick.ru to the nginx external IP ($IP_ADDRESS)
+# add a DNS A record inside your DNS provider that point k8s.maslick.ru to the nginx external IP ($IP_ADDRESS)
 # it may take some time, so the easiest is to add this to /etc/hosts
 
 
