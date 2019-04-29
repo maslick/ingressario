@@ -1,56 +1,77 @@
 # =ingressario=
 
+1. Sign-in to GCP:
 ```
 gcloud auth revoke --all
 gcloud init
+```
 
+2. Create new project:
+```
 gcloud projects create ingressario
 gcloud projects list
 gcloud config set project ingressario
+```
 
-# enable K8s engine, Compute engine, and billing from gcp console for project ingressario
+3. Enable K8s engine, Compute engine, and billing from gcp console for project ``ingressario``.
 
+
+4. Create a new cluster on GKE:
+```
 gcloud container clusters create ingressario-cluster --zone=europe-west3-a --machine-type=n1-standard-1 --num-nodes=2
 gcloud container clusters get-credentials ingressario-cluster --zone europe-west3-a --project ingressario
+```
 
-# install tiller
+5. Install tiller:
+```
 k create serviceaccount tiller --namespace kube-system
 k create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account tiller
 kubectl get pods --namespace kube-system
+```
 
-# install Nginx Ingress controller
+6. Install Nginx Ingress controller
+```
 helm install stable/nginx-ingress \
   --name ingressario-nginx \
   --set rbac.create=true \
   --namespace kube-system
+```
 
-# make nginx-ingress ip static (GKE) 
+7. Make nginx-ingress ip static (GKE) 
+```
 NAMESPACE=kube-system
 IP_ADDRESS=$(kubectl describe service ingressario-nginx-nginx-ingress-controller --namespace=$NAMESPACE | grep 'LoadBalancer Ingress' | rev | cut -d: -f1 | rev | xargs)
 gcloud compute addresses create k8s-static-ip --addresses $IP_ADDRESS --region europe-west3
+```
 
-# add a DNS A record inside your DNS provider that point k8s.maslick.ru to the nginx external IP ($IP_ADDRESS)
-# it may take some time, so the easiest is to add this to /etc/hosts
+8. Add a DNS A record inside your DNS provider that point k8s.maslick.ru to the nginx external IP ($IP_ADDRESS). It may take some time, so the easiest would be to add this to your ``/etc/hosts``.
 
 
-# create deployment and service
+9. Create deployment and service:
+```
 k run web --image=gcr.io/google-samples/hello-app:1.0 --port=8080
 k expose deployment web --target-port=8080 --type=NodePort
 k get service web
+```
 
-# install cert-manager
+10. Install cert-manager:
+```
 helm install stable/cert-manager \
     --namespace kube-system \
     --set ingressShim.defaultIssuerName=letsencrypt-prod \
     --set ingressShim.defaultIssuerKind=ClusterIssuer \
     --version v0.5.2
+```
 
-# create issuer
+11. Create issuer:
+```
 k apply -f issuer.yaml
 k describe clusterissuer letsencrypt-prod
+```
 
-# create ingress
+12. Create ingress and test the service:
+```
 k apply -f ingress.yaml
 curl -v k8s.maslick.ru/hi
 curl -v k8s.maslick.ru/hello
