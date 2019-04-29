@@ -36,6 +36,17 @@ k run web --image=gcr.io/google-samples/hello-app:1.0 --port=8080
 k expose deployment web --target-port=8080 --type=NodePort
 k get service web
 
+# install cert-manager
+helm install stable/cert-manager \
+    --namespace kube-system \
+    --set ingressShim.defaultIssuerName=letsencrypt-prod \
+    --set ingressShim.defaultIssuerKind=ClusterIssuer \
+    --version v0.5.2
+
+# create issuer
+k apply -f issuer.yaml
+k describe clusterissuer letsencrypt-prod
+
 # create ingress
 k apply -f ingress.yaml
 curl -v k8s.maslick.ru/hi
