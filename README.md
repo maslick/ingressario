@@ -47,15 +47,7 @@ gcloud compute addresses create k8s-static-ip --addresses $IP_ADDRESS --region e
 
 8. Add a DNS A record inside your DNS provider that point k8s.maslick.ru to the nginx external IP ($IP_ADDRESS). It may take some time, so the easiest would be to add this to your ``/etc/hosts``.
 
-
-9. Create deployment and service:
-```
-k run web --image=gcr.io/google-samples/hello-app:1.0 --port=8080
-k expose deployment web --target-port=8080 --type=NodePort
-k get service web
-```
-
-10. Install cert-manager:
+9. Install cert-manager:
 ```
 helm install stable/cert-manager \
     --namespace kube-system \
@@ -64,15 +56,22 @@ helm install stable/cert-manager \
     --version v0.5.2
 ```
 
-11. Create issuer:
+10. Create issuer:
 ```
 k apply -f issuer.yaml
 k describe clusterissuer letsencrypt-prod
 ```
 
-12. Create ingress:
+11. Create ingress:
 ```
 k apply -f ingress.yaml
+```
+
+12. Create deployment and service:
+```
+k run web --image=gcr.io/google-samples/hello-app:1.0 --port=8080
+k expose deployment web --target-port=8080 --type=NodePort
+k get service web
 ```
 
 13. Test the service:
