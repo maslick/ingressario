@@ -27,7 +27,7 @@ gcloud container clusters get-credentials ingressario-cluster --zone europe-west
 k create serviceaccount tiller --namespace kube-system
 k create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account tiller
-kubectl get pods --namespace kube-system
+k get pods --namespace kube-system
 ```
 
 6. Install Nginx Ingress controller
@@ -41,7 +41,7 @@ helm install stable/nginx-ingress \
 7. Make nginx-ingress ip static (GKE) 
 ```
 NAMESPACE=kube-system
-IP_ADDRESS=$(kubectl describe service ingressario-nginx-nginx-ingress-controller --namespace=$NAMESPACE | grep 'LoadBalancer Ingress' | rev | cut -d: -f1 | rev | xargs)
+IP_ADDRESS=$(k describe service ingressario-nginx-nginx-ingress-controller --namespace=$NAMESPACE | grep 'LoadBalancer Ingress' | rev | cut -d: -f1 | rev | xargs)
 gcloud compute addresses create k8s-static-ip --addresses $IP_ADDRESS --region europe-west3
 ```
 
