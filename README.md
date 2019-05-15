@@ -65,6 +65,7 @@ k describe clusterissuer letsencrypt-prod
 11. Create ingress:
 ```
 k apply -f ingress.yaml
+k describe certificate tls-prod-cert
 ```
 
 12. Create deployment and service:
